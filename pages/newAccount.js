@@ -1,9 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Layout from '../components/Layout';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
+import {useMutation, gql} from '@apollo/client';
+
+const NEW_ACCOUNT = gql`
+    mutation newUser($input: UserInput){
+        newUser(input: $input){
+        id
+        name
+        lastName
+        email
+    }
+    }
+`;
 
 const NewAccount = () => {
+
+    //react state for handling messages
+    const [message, setMessage] = useState(null);
+    
+    //mutation for new user
+    const [newUser, {loading} ] = useMutation(NEW_ACCOUNT);
 
     const formik = useFormik({
         initialValues:{
@@ -18,10 +36,35 @@ const NewAccount = () => {
             email: yup.string().email('Invalid email format').required('The email is required'),
             password: yup.string().required('The password should not be empty').min(8, 'password should be at least 8 characters')
         }),
-        onSubmit: values =>{
-            console.log(values);
+        onSubmit: async values =>{
+            const {name, surname, email, password} = values;
+            try{
+                const {data} = await newUser({
+                    variables:{
+                        input:{
+                            name: name,
+                            lastName: surname,
+                            email: email,
+                            password: password
+                        }
+                    }
+                })
+            }catch(error){
+                setMessage(error.message);
+                setTimeout(() =>{
+                    setMessage(null);
+                }, 3000);
+            }
         }
     });
+
+    const showMessage = () =>{
+        return(
+            <div className="bg-red-200 w-full text-center">
+                <p className="font-bold text-red-500">{message}</p>
+            </div>
+        );
+    }
 
     return(
         <>
@@ -31,6 +74,9 @@ const NewAccount = () => {
                 <div className="flex justify-center mt-5">
                     <div className="w-full max-w-sm">
                         <form className="bg-white rounded shadow-md px-8 pt-6 pb-8 mb-4" onSubmit={formik.handleSubmit}>
+                            {
+                                message && showMessage(message)
+                            }
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Name:</label>
                                 <input className="shadow apperanace-none border rounded w-full py-2 px-3 text-gray-700 leading-tight 
