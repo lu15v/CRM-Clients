@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useRouter} from 'next/router';
 import Layout from '../components/Layout';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
@@ -22,6 +23,8 @@ const NewAccount = () => {
     
     //mutation for new user
     const [newUser, {loading} ] = useMutation(NEW_ACCOUNT);
+
+    const router = useRouter();
 
     const formik = useFormik({
         initialValues:{
@@ -49,6 +52,10 @@ const NewAccount = () => {
                         }
                     }
                 })
+                setTimeout(()=>{
+                    setMessage(`The user ${email} was created successfully`)
+                    router.push('/login');
+                },3000)
             }catch(error){
                 setMessage(error.message);
                 setTimeout(() =>{
@@ -58,10 +65,12 @@ const NewAccount = () => {
         }
     });
 
-    const showMessage = () =>{
+    const showMessage = (isErrorMessage, customMessage) =>{
+        let isAnError = isErrorMessage || false;
+        let currentMessage = customMessage || message
         return(
-            <div className="bg-red-200 w-full text-center">
-                <p className="font-bold text-red-500">{message}</p>
+            <div className={`w-full text-center ${isAnError ?  "bg-red-200": "bg-green-200" }`}>
+                <p className={`font-bold ${isAnError ? "text-red-500" : "text-green-500"}`}>{currentMessage}</p>
             </div>
         );
     }
@@ -75,7 +84,7 @@ const NewAccount = () => {
                     <div className="w-full max-w-sm">
                         <form className="bg-white rounded shadow-md px-8 pt-6 pb-8 mb-4" onSubmit={formik.handleSubmit}>
                             {
-                                message && showMessage(message)
+                                message && showMessage(!message.includes('successfully'))
                             }
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Name:</label>
