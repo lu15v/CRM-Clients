@@ -1,6 +1,8 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import {gql, useQuery} from '@apollo/client';
+import {useRouter} from 'next/router';
+import Redirect from '../components/Redirect';
 
 const GET_CLIENTS_USER = gql`
     query getClientsVendor{
@@ -16,10 +18,16 @@ const GET_CLIENTS_USER = gql`
 
 
 const Home = () =>{
-    
+    const router = useRouter();
     const {data, loading, error} = useQuery(GET_CLIENTS_USER);
 
     if(loading) return 'Loading...';
+
+    if(!data.getClientsVendor){
+        return(
+            <Redirect redTime={4} redFun={() => router.push('login')}/>   
+        )
+    }
 
     return(
         <div>
