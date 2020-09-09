@@ -3,6 +3,8 @@ import Layout from '../components/Layout';
 import {gql, useQuery} from '@apollo/client';
 import {useRouter} from 'next/router';
 import Redirect from '../components/Redirect';
+import Link from 'next/link';
+
 
 const GET_CLIENTS_USER = gql`
     query getClientsVendor{
@@ -15,6 +17,8 @@ const GET_CLIENTS_USER = gql`
         }
     }
 `;
+
+
 
 
 const Home = () =>{
@@ -33,6 +37,9 @@ const Home = () =>{
         <div>
             <Layout>
                 <h1 className="text-2xl text-gray-800 font-light">Clients</h1>
+                <Link href="/newClient">
+                    <a className="bg-blue-800 py-2 px-5 mt-3 inline-block text-white rounded text-sm hover:bg-gray-800 mb-3 uppercase font-bold">New Client</a>
+                </Link>
                 <table className="table-auto shadow-md mt-10 w-full w-lg">
                     <thead className="bg-gray-800">
                         <tr className="text-white">
