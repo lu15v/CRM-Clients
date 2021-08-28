@@ -27,7 +27,8 @@ const Home = () =>{
 
     if(loading) return 'Loading...';
 
-    if(!data.getClientsVendor){
+
+    if(!data && !loading){
         return(
             <Redirect redTime={4} redFun={() => router.push('login')}/>   
         )
